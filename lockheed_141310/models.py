@@ -39,15 +39,16 @@ class CMLog(db.Model):
         self.data = data
 
     @classmethod
-    def create(cls, cm_uuid: UUID, log_type: str, data: dict) -> None:
+    def create(cls, cm_uuid: UUID, log_type: str, data: dict) -> dict:
         new_log = cls(cm_uuid, log_type, data)
         db.session.add(new_log)
         db.session.commit()
+        return new_log.to_dict()
 
     def to_dict(self) -> dict:
         return {
             "id": self.id,
-            "uuid": self.uuid,
+            "cm_uuid": self.cm_uuid,
             "timestamp": str(self.timestamp),
             "log_type": self.log_type,
             "data": self.data
