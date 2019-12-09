@@ -73,12 +73,22 @@ class Users(db.Model):
         db.session.add(new_user)
         db.session.commit()
 
-    def has_role(self, search_role: str):
+    # TODO: differentiate role name vs role id, and change in add role route
+    def has_role_name(self, search_role: str):
         roles = {role.id: role.name for role in RoleDefinitions.query.all()}
         owned_role_ids = [role.role_id for role in Roles.query.filter_by(user_id=self.id).all()]
-        print(owned_role_ids)
         for owned_role_id in owned_role_ids:
             if roles[owned_role_id] == search_role:
+                return True
+        return False
+
+    def has_role_id(self, role_id: int) -> bool:
+        """
+        Takes a role id as input and returns a boolean describing whether or not this user is a member of that role
+        """
+        owned_role_ids = [role.role_id for role in Roles.query.filter_by(user_id=self.id).all()]
+        for owned_role_id in owned_role_ids:
+            if owned_role_id == role_id:
                 return True
         return False
 

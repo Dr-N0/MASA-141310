@@ -45,3 +45,7 @@ def requires_permissions(required_permission):
             }), 403
         return wrapper
     return requires
+
+
+def has_role(claims: dict, required_role: str):
+    return required_role in claims.get('roles')

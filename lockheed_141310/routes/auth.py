@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, set_ac
     jwt_required, jwt_refresh_token_required, get_jwt_identity, get_jwt_claims, get_raw_jwt
 
 from lockheed_141310 import blacklist
-from lockheed_141310.utils import authenticate, requires_permissions
+from lockheed_141310.utils import authenticate
 from lockheed_141310.models import Users
 
 auth_bp = Blueprint('auth', __name__)
@@ -61,15 +61,7 @@ def logout():
 @auth_bp.route('/protected', methods=['GET'])
 @jwt_required
 def protected():
-    print(blacklist)
     return jsonify({
         'identity': get_jwt_identity(),
         'roles': get_jwt_claims()['roles']
     }), 200
-
-
-@auth_bp.route('/test', methods=['GET'])
-@jwt_required
-@requires_permissions("get_log")
-def testing():
-    return jsonify({"ligma": "sugma"}), 200
