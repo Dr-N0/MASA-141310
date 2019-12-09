@@ -1,5 +1,5 @@
 from functools import wraps
-from flask_jwt_extended import get_jwt_claims
+from flask_jwt_extended import get_jwt_claims, get_jwt_identity
 from flask import jsonify
 
 from lockheed_141310 import jwt, ph, blacklist
@@ -47,5 +47,14 @@ def requires_permissions(required_permission):
     return requires
 
 
-def has_role(claims: dict, required_role: str):
-    return required_role in claims.get('roles')
+def has_role_by_name(required_role: str) -> bool:
+    """
+    Determines if the current user has the required role, described by a string
+    """
+    if claims := get_jwt_claims():
+        if required_role in claims['roles']:
+            return True
+    if identity := get_jwt_identity():
+        current_user = Users.query.filter_by(username=identity).first()
+        return bool(current_user.owner)
+    return False

@@ -18,7 +18,7 @@ class CMMeta(db.Model):
         self.name = name
 
     @classmethod
-    def create(cls, name: str):
+    def create(cls, name: str) -> None:
         new_meta = cls(name)
         db.session.add(new_meta)
         db.session.commit()
@@ -39,12 +39,12 @@ class CMLog(db.Model):
         self.data = data
 
     @classmethod
-    def create(cls, cm_uuid: UUID, log_type: str, data: dict):
+    def create(cls, cm_uuid: UUID, log_type: str, data: dict) -> None:
         new_log = cls(cm_uuid, log_type, data)
         db.session.add(new_log)
         db.session.commit()
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "uuid": self.uuid,
@@ -68,13 +68,16 @@ class Users(db.Model):
         self.is_owner = False
 
     @classmethod
-    def create(cls, username: str, password: str):
+    def create(cls, username: str, password: str) -> None:
         new_user = cls(username, password)
         db.session.add(new_user)
         db.session.commit()
 
     # TODO: differentiate role name vs role id, and change in add role route
-    def has_role_name(self, search_role: str):
+    def has_role_name(self, search_role: str) -> bool:
+        """
+        Determines if user is member of role, given role name
+        """
         roles = {role.id: role.name for role in RoleDefinitions.query.all()}
         owned_role_ids = [role.role_id for role in Roles.query.filter_by(user_id=self.id).all()]
         for owned_role_id in owned_role_ids:
@@ -84,7 +87,7 @@ class Users(db.Model):
 
     def has_role_id(self, role_id: int) -> bool:
         """
-        Takes a role id as input and returns a boolean describing whether or not this user is a member of that role
+        Determines if user is member of role, given role id
         """
         owned_role_ids = [role.role_id for role in Roles.query.filter_by(user_id=self.id).all()]
         for owned_role_id in owned_role_ids:
@@ -113,7 +116,7 @@ class RoleDefinitions(db.Model):
         db.session.add(new_role)
         db.session.commit()
 
-    def to_json(self):
+    def to_json(self) -> dict:
         return {
             "name": self.name,
             "is_admin": self.is_admin,
@@ -121,7 +124,10 @@ class RoleDefinitions(db.Model):
             "post_log": self.post_log
         }
 
-    def has_permission(self, permission: str):
+    def has_permission(self, permission: str) -> bool:
+        """
+        Determines if user has permission
+        """
         if hasattr(self, permission):
             return getattr(self, permission)
         return False
@@ -138,15 +144,18 @@ class Roles(db.Model):
         self.role_id = role_id
 
     @classmethod
-    def create(cls, user_id: UUID, role_id: int):
+    def create(cls, user_id: UUID, role_id: int) -> None:
         new_role = cls(user_id, role_id)
         db.session.add(new_role)
         db.session.commit()
 
-    def get_name(self):
+    def get_name(self) -> str:
         return RoleDefinitions.query.filter_by(id=self.role_id).first().name
 
-    def has_permission(self, permission: str):
+    def has_permission(self, permission: str) -> bool:
+        """
+        Determines if role has the specified permission
+        """
         definition = RoleDefinitions.query.filter_by(self.role_id).first()
         if hasattr(definition, permission):
             return getattr(definition, permission)

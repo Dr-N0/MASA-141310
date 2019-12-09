@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_claims, jwt_required
+from flask_jwt_extended import jwt_required
 
 from lockheed_141310 import db
 from lockheed_141310.models import RoleDefinitions
-from lockheed_141310.utils import has_role
+from lockheed_141310.utils import has_role_by_name
 
 
 role_bp = Blueprint('role_bp', __name__)
@@ -13,7 +13,11 @@ role_bp = Blueprint('role_bp', __name__)
 @role_bp.route('/<name>', methods=['GET', 'POST', 'DELETE'])
 @jwt_required
 def role(name):
-    claims = get_jwt_claims()
+    """
+    :GET: returns the description of the requested role
+    :POST: creates a new role
+    :DELETE: deletes the specified role
+    """
     if request.method == 'GET':
         requested_role = RoleDefinitions.query.filter_by(name=name).first()
         if requested_role:
@@ -21,7 +25,7 @@ def role(name):
                             "role": requested_role}), 200
         return jsonify({"status": "error"}), 404
     if request.method == 'POST':
-        if not has_role(claims, 'is_admin'):
+        if not has_role_by_name('is_admin'):
             return jsonify({
                 "status": "error",
                 "message": "missing is_admin role"
@@ -47,7 +51,7 @@ def role(name):
         requested_role = RoleDefinitions.query.filter_by(name=name).first()
         return jsonify(requested_role.to_json()), 201
     if request.method == 'DELETE':
-        if not has_role(claims, 'is_admin'):
+        if not has_role_by_name('is_admin'):
             return jsonify({
                 "status": "error",
                 "message": "missing is_admin role"

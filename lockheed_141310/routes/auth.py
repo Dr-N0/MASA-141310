@@ -11,6 +11,10 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
+    """
+    Validates a user given their username and password in a json, and returns an httponly cookie with an access token
+    and a refresh token.
+    """
     if not request.is_json:
         return jsonify({"status": "error",
                         "message": "missing json in request"}), 422
@@ -39,6 +43,9 @@ def login():
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
+    """
+    Checks for a refresh token and then hands the user a valid access token
+    """
     current_username = get_jwt_identity()
     current_user = Users.query.filter_by(username=current_username).first()
     access_token = create_access_token(identity=current_user)
@@ -51,6 +58,10 @@ def refresh():
 @auth_bp.route('/logout', methods=['DELETE'])
 @jwt_required
 def logout():
+    """
+    Invalidates the user's access token
+    :TODO: make the blacklist some kind of persistent storage, otherwise we can't have multiple workers
+    """
     jti = get_raw_jwt()['jti']
     blacklist.add(jti)
     print(blacklist)

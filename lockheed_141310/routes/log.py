@@ -1,14 +1,19 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 
-from lockheed_141310 import db
-from lockheed_141310.models import CMLog, CMMeta
+from lockheed_141310.models import CMLog
 
 log_bp = Blueprint('log_bp', __name__)
 
 
 # pylint: disable=inconsistent-return-statements
 @log_bp.route('/<cm_uuid>/<log_type>', methods=['GET', 'POST'])
+@jwt_required
 def log(cm_uuid: str, log_type: str):
+    """
+    :GET: returns the specified number of logs matching the specified log type
+    :POST: inserts log with data into the database
+    """
     if request.method == 'GET':
         limit = 20
         offset = 0
@@ -24,12 +29,3 @@ def log(cm_uuid: str, log_type: str):
         return jsonify([cm_log.to_json() for cm_log in query.all()]), 200
     if request.method == 'POST':
         pass
-
-
-@log_bp.route('/create_log')
-def create_log():
-    cm_uuid = CMMeta.query.first().uuid
-    new_log = CMLog(cm_uuid, "test", {"data": "test"})
-    db.session.add(new_log)
-    db.session.commit()
-    return jsonify({"status": "success"}), 200

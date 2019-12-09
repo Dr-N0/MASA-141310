@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_claims, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from lockheed_141310.models import Users, Roles
-from lockheed_141310.utils import has_role
+from lockheed_141310.utils import has_role_by_name
 
 users_bp = Blueprint('users_bp', __name__)
 
@@ -17,7 +17,7 @@ def add_user_to_role(username: str, role_id: int):
             return jsonify({"status": "success"}), 200
         return jsonify({"status": "error"}), 200
     if request.method == 'POST':
-        if has_role(get_jwt_claims(), 'is_admin'):
+        if not has_role_by_name('is_admin'):
             return jsonify({
                 "status": "error",
                 "message": "missing required permissions"
