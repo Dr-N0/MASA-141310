@@ -49,7 +49,7 @@ def role(name):
                                get_log=bool(get_log),
                                post_log=bool(post_log))
         requested_role = RoleDefinitions.query.filter_by(name=name).first()
-        return jsonify(requested_role.to_json()), 201
+        return jsonify(requested_role.to_dict()), 201
     if request.method == 'DELETE':
         if not has_role_by_name('is_admin'):
             return jsonify({

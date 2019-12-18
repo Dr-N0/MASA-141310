@@ -176,19 +176,19 @@ class CMLogTypes(db.Model):
     log_type = db.Column(TEXT)
     description = db.Column(TEXT)
 
-    def __init__(self, cm_uuid: UUID, log_type: str, description: str):
+    def __init__(self, cm_uuid: str, log_type: str, description: str):
         self.cm_uuid = cm_uuid
         self.log_type = log_type
         self.description = description
 
     @classmethod
-    def create(cls, cm_uuid: UUID, log_type: str, description: str = None) -> dict:
+    def create(cls, cm_uuid: str, log_type: str, description: str = None) -> dict:
         new_cm_log_type = cls(cm_uuid, log_type, description)
         db.session.add(new_cm_log_type)
         db.session.commit()
-        return new_cm_log_type.to_json()
+        return new_cm_log_type.to_dict()
 
-    def to_json(self):
+    def to_dict(self):
         return {
             "id": self.id,
             "cm_uuid": self.cm_uuid,
