@@ -17,7 +17,7 @@ blacklist = set()  # TODO: make this a tabley boi
 from lockheed_141310.routes import log_bp, auth_bp, role_bp, users_bp
 # pylint: enable=wrong-import-position
 
-app.register_blueprint(log_bp, url_prefix='/log')
+app.register_blueprint(log_bp, url_prefix='/logs')
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(role_bp, url_prefix='/roles')
 app.register_blueprint(users_bp, url_prefix='/users')

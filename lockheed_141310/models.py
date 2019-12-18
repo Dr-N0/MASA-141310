@@ -26,8 +26,11 @@ class CMMeta(db.Model):
 
 class CMLog(db.Model):
     __tablename__ = 'cm_log'
+    __table_args__ = (
+        db.ForeignKeyConstraint(('cm_uuid', 'log_type'), ('cm_log_types.cm_uuid', 'cm_log_types.log_type')),
+    )
     id = db.Column(db.Integer, primary_key=True)
-    cm_uuid = db.Column(UUID(as_uuid=True), ForeignKey('cm_meta.uuid'), default=uuid.uuid4())
+    cm_uuid = db.Column(UUID(as_uuid=True), default=uuid.uuid4())
     timestamp = db.Column(TIMESTAMP)
     log_type = db.Column(TEXT)
     data = db.Column(JSONB)
@@ -161,3 +164,34 @@ class Roles(db.Model):
         if hasattr(definition, permission):
             return getattr(definition, permission)
         return False
+
+
+class CMLogTypes(db.Model):
+    __tablename__ = 'cm_log_types'
+    __table_args__ = (
+        db.UniqueConstraint('cm_uuid', 'log_type', name='log_type'),
+    )
+    id = db.Column(db.Integer, primary_key=True)
+    cm_uuid = db.Column(UUID, ForeignKey("cm_meta.uuid"))
+    log_type = db.Column(TEXT)
+    description = db.Column(TEXT)
+
+    def __init__(self, cm_uuid: UUID, log_type: str, description: str):
+        self.cm_uuid = cm_uuid
+        self.log_type = log_type
+        self.description = description
+
+    @classmethod
+    def create(cls, cm_uuid: UUID, log_type: str, description: str = None) -> dict:
+        new_cm_log_type = cls(cm_uuid, log_type, description)
+        db.session.add(new_cm_log_type)
+        db.session.commit()
+        return new_cm_log_type.to_json()
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "cm_uuid": self.cm_uuid,
+            "log_type": self.log_type,
+            "description": self.description
+        }
