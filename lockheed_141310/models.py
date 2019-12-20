@@ -72,10 +72,11 @@ class Users(db.Model):
         self.is_owner = False
 
     @classmethod
-    def create(cls, username: str, password: str) -> None:
-        new_user = cls(username, password)
+    def create(cls, username: str, hashed_password: str) -> dict:
+        new_user = cls(username, hashed_password)
         db.session.add(new_user)
         db.session.commit()
+        return new_user.to_dict()
 
     # TODO: differentiate role name vs role id, and change in add role route
     def has_role_name(self, search_role: str) -> bool:
@@ -94,10 +95,32 @@ class Users(db.Model):
         Determines if user is member of role, given role id
         """
         owned_role_ids = [role.role_id for role in Roles.query.filter_by(user_id=self.id).all()]
+        print(owned_role_ids)
         for owned_role_id in owned_role_ids:
             if owned_role_id == role_id:
+                print("Match!")
                 return True
         return False
+
+    def roles(self):
+        roles_query = Roles.query.filter_by(user_id=self.id).all()
+        roles = []
+        for role in roles_query:
+            role_definition = RoleDefinitions.query.filter_by(id=role.role_id).first()
+            role_data = {
+                "role_id": role_definition.id,
+                "name": role_definition.name,
+            }
+            roles.append(role_data)
+        return roles
+
+    def to_dict(self):
+        return {
+            "username": self.username,
+            "id": self.id,
+            "is_owner": self.is_owner,
+            "roles": self.roles()
+        }
 
 
 class RoleDefinitions(db.Model):
