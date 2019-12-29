@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_cors import cross_origin
 
 from lockheed_141310 import ph
 from lockheed_141310.models import db, Users, Roles
@@ -96,6 +97,7 @@ def users_route():
 # pylint: disable=inconsistent-return-statements
 @users_bp.route('/username/<username>/roles', methods=['GET', 'POST'])
 @jwt_required
+@cross_origin(origin='localhost', supports_credentials=True)
 def all_roles_route(username: str):
     if request.method == 'GET':
         target_user = Users.query.filter_by(username=username).first()

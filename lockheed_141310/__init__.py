@@ -1,11 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from argon2 import PasswordHasher
 
 import config
 
 app = Flask(__name__)
+CORS(app)
 
 app.config.from_object(config)
 db = SQLAlchemy(app)

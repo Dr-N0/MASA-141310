@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
     jwt_required, jwt_refresh_token_required, get_jwt_identity, get_jwt_claims, get_raw_jwt
+from flask_cors import cross_origin
 
 from lockheed_141310 import blacklist
 from lockheed_141310.utils import authenticate
@@ -10,6 +11,7 @@ auth_bp = Blueprint('auth', __name__)
 
 
 @auth_bp.route('/login', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def login():
     """
     Validates a user given their username and password in a json, and returns an httponly cookie with an access token
