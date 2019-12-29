@@ -1,6 +1,7 @@
 from functools import wraps
 from flask_jwt_extended import get_jwt_claims, get_jwt_identity
 from flask import jsonify
+from argon2.exceptions import VerifyMismatchError
 
 from lockheed_141310 import jwt, ph, blacklist
 from lockheed_141310.models import Users, Roles, RoleDefinitions
@@ -10,7 +11,10 @@ def authenticate(username: str, password: str):
     user = Users.query.filter_by(username=username).first()
     if not user:
         return False
-    return ph.verify(user.password, password)
+    try:
+        return ph.verify(user.password, password)
+    except VerifyMismatchError:
+        return False
 
 
 @jwt.user_claims_loader
