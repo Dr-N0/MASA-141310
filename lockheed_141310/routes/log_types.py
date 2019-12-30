@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from flask_cors import cross_origin
 
 from lockheed_141310.models import CMLog, CMLogTypes, db
 
@@ -9,6 +10,7 @@ log_types_bp = Blueprint('log_types', __name__)
 # pylint: disable=inconsistent-return-statements
 @log_types_bp.route('/<cm_uuid>', methods=['GET', 'POST', 'DELETE'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def log_types_route(cm_uuid: str):
     if request.method == 'GET':
         log_types = CMLogTypes.query.filter_by(cm_uuid=cm_uuid).all()
@@ -57,6 +59,7 @@ def log_types_route(cm_uuid: str):
 # pylint: disable=inconsistent-return-statements
 @log_types_bp.route('/<cm_uuid>/<log_type>', methods=['GET', 'DELETE'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def single_log_type(cm_uuid: str, log_type: str):
     if request.method == 'GET':
         if requested_type := CMLogTypes.query.filter_by(cm_uuid=cm_uuid, log_type=log_type).first():

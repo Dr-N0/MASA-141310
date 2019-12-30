@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from flask_cors import cross_origin
 
 from lockheed_141310 import db
 from lockheed_141310.models import RoleDefinitions
@@ -12,6 +13,7 @@ role_bp = Blueprint('role_bp', __name__)
 # pylint: disable=inconsistent-return-statements
 @role_bp.route('/<name>', methods=['GET', 'POST', 'DELETE'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def role(name):
     """
     :GET: returns the description of the requested role

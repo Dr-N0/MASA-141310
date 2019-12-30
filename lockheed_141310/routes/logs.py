@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from sqlalchemy.dialects.postgresql import UUID
+from flask_cors import cross_origin
 
 from lockheed_141310.models import CMLog, CMLogTypes, CMMeta
 
@@ -10,6 +11,7 @@ log_bp = Blueprint('log_bp', __name__)
 # pylint: disable=inconsistent-return-statements
 @log_bp.route('/<cm_uuid>', methods=['GET', 'POST'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def log(cm_uuid: UUID):
     """
     :GET: returns the most recent logs for the specified control module. accepts the following url parameters

@@ -12,6 +12,7 @@ users_bp = Blueprint('users_bp', __name__)
 # pylint: disable=inconsistent-return-statements
 @users_bp.route('/username/<username>', methods=['GET', 'DELETE'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def username_route(username: str):
     if request.method == 'GET':
         if user := Users.query.filter_by(username=username).first():
@@ -45,6 +46,7 @@ def username_route(username: str):
 
 @users_bp.route('/', methods=['GET', 'POST'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def users_route():
     if request.method == 'GET':
         limit = 20
@@ -97,7 +99,7 @@ def users_route():
 # pylint: disable=inconsistent-return-statements
 @users_bp.route('/username/<username>/roles', methods=['GET', 'POST'])
 @jwt_required
-@cross_origin(origin='localhost', supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def all_roles_route(username: str):
     if request.method == 'GET':
         target_user = Users.query.filter_by(username=username).first()
@@ -138,6 +140,7 @@ def all_roles_route(username: str):
 # pylint: disable=inconsistent-return-statements
 @users_bp.route('/username/<username>/roles/<role_id>', methods=['POST'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def add_user_to_role(username: str, role_id: str):
     if request.method == 'POST':
         if not has_role_by_name('is_admin'):

@@ -44,6 +44,7 @@ def login():
 
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
+@cross_origin(supports_credentials=True)
 def refresh():
     """
     Checks for a refresh token and then hands the user a valid access token
@@ -59,6 +60,7 @@ def refresh():
 
 @auth_bp.route('/logout', methods=['DELETE'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def logout():
     """
     Invalidates the user's access token
@@ -73,6 +75,7 @@ def logout():
 
 @auth_bp.route('/protected', methods=['GET'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def protected():
     return jsonify({
         'identity': get_jwt_identity(),
