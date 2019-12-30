@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
-    jwt_required, jwt_refresh_token_required, get_jwt_identity, get_jwt_claims, get_raw_jwt
+    jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt
 from flask_cors import cross_origin
 
 from lockheed_141310 import blacklist
@@ -73,11 +73,10 @@ def logout():
                     "message": "token successfully revoked"}), 200
 
 
-@auth_bp.route('/protected', methods=['GET'])
+@auth_bp.route('/check', methods=['GET'])
 @jwt_required
 @cross_origin(supports_credentials=True)
-def protected():
+def check():
     return jsonify({
-        'identity': get_jwt_identity(),
-        'roles': get_jwt_claims()['roles']
+        "status": "success"
     }), 200
