@@ -90,6 +90,12 @@ def create_user():
             "message": "missing username or password"
         }), 422
 
+    if Users.query.filter_by(username=username).first():
+        return jsonify({
+            "status": "error",
+            "message": "user already exists"
+        }), 409
+
     if active and not has_permission_by_name("create_user"):
         active = False
 
