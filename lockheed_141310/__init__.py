@@ -7,7 +7,7 @@ from argon2 import PasswordHasher
 import config
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 app.config.from_object(config)
 db = SQLAlchemy(app)
