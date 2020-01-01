@@ -60,22 +60,24 @@ class CMLog(db.Model):
 
 class Users(db.Model):
     __tablename__ = 'users'
-    username = db.Column(TEXT)
+    username = db.Column(TEXT, unique=True)
     password = db.Column(TEXT)
     id = db.Column(UUID(as_uuid=True), default=uuid.uuid4(), primary_key=True)
     is_owner = db.Column(BOOLEAN)
     active = db.Column(BOOLEAN)
+    email = db.Column(TEXT, unique=True)
 
-    def __init__(self, username: str, password: str, active: bool):
+    def __init__(self, username: str, password: str, email: str, active: bool):
         self.username = username
         self.password = password
         self.id = uuid.uuid4()
         self.is_owner = False
         self.active = active
+        self.email = email
 
     @classmethod
-    def create(cls, username: str, hashed_password: str, active: bool = False) -> dict:
-        new_user = cls(username, hashed_password, active)
+    def create(cls, username: str, hashed_password: str, email: str, active: bool = False) -> dict:
+        new_user = cls(username, hashed_password, email, active)
         db.session.add(new_user)
         db.session.commit()
         return new_user.to_dict()

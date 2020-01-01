@@ -82,12 +82,13 @@ def create_user():
         }), 415
     username = request.json.get('username')
     password = request.json.get('password')
+    email = request.json.get('email')
     active = request.json.get('active', False)
 
-    if not username and password:
+    if not (username and password and email):
         return jsonify({
             "status": "error",
-            "message": "missing username or password"
+            "message": "missing username or password or email"
         }), 422
 
     if Users.query.filter_by(username=username).first():
@@ -99,7 +100,7 @@ def create_user():
     if active and not has_permission_by_name("create_user"):
         active = False
 
-    new_user = Users.create(username, ph.hash(password), active)
+    new_user = Users.create(username, ph.hash(password), email, active)
     new_user['status'] = 'success'
     return jsonify(new_user), 201
 
