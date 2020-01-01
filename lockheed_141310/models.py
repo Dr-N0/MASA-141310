@@ -5,7 +5,7 @@ import pytz
 from sqlalchemy.dialects.postgresql import JSONB, UUID, TEXT, TIMESTAMP, BOOLEAN
 from sqlalchemy import ForeignKey
 
-from lockheed_141310 import db, ph
+from lockheed_141310 import db
 
 
 class CMMeta(db.Model):

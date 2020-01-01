@@ -44,55 +44,58 @@ def username_route(username: str):
         }), 404
 
 
-@users_bp.route('/', methods=['GET', 'POST'])
+@users_bp.route('/', methods=['GET'])
 @jwt_required
 @cross_origin(supports_credentials=True)
 def users_route():
-    if request.method == 'GET':
-        limit = 20
-        offset = 0
-        if limit_arg := request.args.get('limit'):
-            limit = limit_arg
-        if offset_arg := request.args.get('offset'):
-            offset = offset_arg
-        users = Users.query \
-            .limit(limit) \
-            .offset(offset * limit) \
-            .all()
-        returnval = dict()
-        returnval['status'] = 'success'
-        returnval['data'] = []
-        for user in users:
-            user_data = {
-                "id": user.id,
-                "username": user.username,
-                "roles": user.roles()
-            }
-            returnval['data'].append(user_data)
+    limit = 20
+    offset = 0
+    if limit_arg := request.args.get('limit'):
+        limit = limit_arg
+    if offset_arg := request.args.get('offset'):
+        offset = offset_arg
+    users = Users.query \
+        .limit(limit) \
+        .offset(offset * limit) \
+        .all()
+    returnval = dict()
+    returnval['status'] = 'success'
+    returnval['data'] = []
+    for user in users:
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "roles": user.roles()
+        }
+        returnval['data'].append(user_data)
 
-        return jsonify(returnval), 200
-    if request.method == 'POST':
-        if not request.is_json:
-            return jsonify({
-                "status": "error",
-                "message": "content-type must be application/json"
-            }), 415
-        username = request.json.get('username')
-        password = request.json.get('password')
-        active = request.json.get('active', False)
+    return jsonify(returnval), 200
 
-        if not username and password:
-            return jsonify({
-                "status": "error",
-                "message": "missing username or password"
-            }), 422
 
-        if active and not has_permission_by_name("create_user"):
-            active = False
+@users_bp.route('/', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def create_user():
+    if not request.is_json:
+        return jsonify({
+            "status": "error",
+            "message": "content-type must be application/json"
+        }), 415
+    username = request.json.get('username')
+    password = request.json.get('password')
+    active = request.json.get('active', False)
 
-        new_user = Users.create(username, ph.hash(password), active)
-        new_user['status'] = 'success'
-        return jsonify(new_user), 201
+    if not username and password:
+        return jsonify({
+            "status": "error",
+            "message": "missing username or password"
+        }), 422
+
+    if active and not has_permission_by_name("create_user"):
+        active = False
+
+    new_user = Users.create(username, ph.hash(password), active)
+    new_user['status'] = 'success'
+    return jsonify(new_user), 201
 
 
 # pylint: disable=inconsistent-return-statements
