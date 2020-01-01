@@ -68,7 +68,7 @@ class Users(db.Model):
 
     def __init__(self, username: str, password: str, active: bool):
         self.username = username
-        self.password = ph.hash(password)
+        self.password = password
         self.id = uuid.uuid4()
         self.is_owner = False
         self.active = active
@@ -121,7 +121,8 @@ class Users(db.Model):
             "username": self.username,
             "id": self.id,
             "is_owner": self.is_owner,
-            "roles": self.roles()
+            "roles": self.roles(),
+            "active": self.active
         }
 
 
@@ -129,13 +130,13 @@ class RoleDefinitions(db.Model):
     __tablename__ = 'role_descriptions'
     name = db.Column(TEXT)
     id = db.Column(db.Integer, primary_key=True)
-    is_admin = db.Column(BOOLEAN)
+    create_user = db.Column(BOOLEAN)
     get_log = db.Column(BOOLEAN)
     post_log = db.Column(BOOLEAN)
 
     def __init__(self, name: str, **kwargs):
         self.name = name
-        self.is_admin = kwargs.get("is_admin", False)
+        self.create_user = kwargs.get("create_user", False)
         self.get_log = kwargs.get("get_log", False)
         self.post_log = kwargs.get("post_log", False)
 

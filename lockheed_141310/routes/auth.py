@@ -32,6 +32,11 @@ def login():
         return jsonify({"status": "error",
                         "message": "invalid credentials"}), 422
     user = Users.query.filter_by(username=username).first()
+    if not user.active and not user.is_owner:
+        return jsonify({
+            "status": "error",
+            "message": "Account not activated"
+        }), 422
     access_token = create_access_token(identity=user)
     refresh_token = create_refresh_token(identity=user)
 

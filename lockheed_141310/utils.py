@@ -12,6 +12,9 @@ def authenticate(username: str, password: str):
     if not user:
         return False
     try:
+        print("verifying")
+        print(user.password)
+        print(password)
         return ph.verify(user.password, password)
     except VerifyMismatchError:
         return False
@@ -58,6 +61,24 @@ def has_role_by_name(required_role: str) -> bool:
     if claims := get_jwt_claims():
         if required_role in claims['roles']:
             return True
+    if identity := get_jwt_identity():
+        current_user = Users.query.filter_by(username=identity).first()
+        return bool(current_user.is_owner)
+    return False
+
+
+def has_permission_by_name(permission: str) -> bool:
+    """
+    Determines if the current user has the specified permission defined in their roles
+    :param permission: name of desired permission
+    :return: true if the user has the permission, false otherwise
+    """
+    if claims := get_jwt_claims():
+        roles = claims['roles']
+        for role_name in roles:
+            role_definition = RoleDefinitions.query.filter_by(name=role_name).first()
+            if role_definition.has_permission(permission):
+                return True
     if identity := get_jwt_identity():
         current_user = Users.query.filter_by(username=identity).first()
         return bool(current_user.is_owner)

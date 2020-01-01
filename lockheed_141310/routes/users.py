@@ -4,7 +4,7 @@ from flask_cors import cross_origin
 
 from lockheed_141310 import ph
 from lockheed_141310.models import db, Users, Roles
-from lockheed_141310.utils import has_role_by_name
+from lockheed_141310.utils import has_role_by_name, has_permission_by_name
 
 users_bp = Blueprint('users_bp', __name__)
 
@@ -72,11 +72,6 @@ def users_route():
 
         return jsonify(returnval), 200
     if request.method == 'POST':
-        if not has_role_by_name('is_admin'):
-            return jsonify({
-                "status": "error",
-                "message": "only admins can create users"
-            }), 403
         if not request.is_json:
             return jsonify({
                 "status": "error",
@@ -84,6 +79,7 @@ def users_route():
             }), 415
         username = request.json.get('username')
         password = request.json.get('password')
+        active = request.json.get('active', False)
 
         if not username and password:
             return jsonify({
@@ -91,7 +87,10 @@ def users_route():
                 "message": "missing username or password"
             }), 422
 
-        new_user = Users.create(username, ph.hash(password))
+        if active and not has_permission_by_name("create_user"):
+            active = False
+
+        new_user = Users.create(username, ph.hash(password), active)
         new_user['status'] = 'success'
         return jsonify(new_user), 201
 
