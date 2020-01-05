@@ -1,6 +1,7 @@
 from uuid import UUID
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from flask_cors import cross_origin
 
 from lockheed_141310.models import db, CMMeta
 
@@ -10,6 +11,7 @@ cm_bp = Blueprint('cm_bp', __name__)
 # pylint: disable=inconsistent-return-statements
 @cm_bp.route('/', methods=['GET', 'POST'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def control_modules():
     if request.method == 'GET':
         limit = 20
@@ -47,6 +49,7 @@ def control_modules():
 # pylint: disable=inconsistent-return-statements
 @cm_bp.route('/name/<cm_name>', methods=['GET', 'DELETE'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def name_cm_name(cm_name: str):
     if request.method == 'GET':
         requested_cm = CMMeta.query.filter_by(name=cm_name).first()
@@ -77,6 +80,7 @@ def name_cm_name(cm_name: str):
 # pylint: disable=inconsistent-return-statements
 @cm_bp.route('/id/<cm_uuid>', methods=['GET', 'DELETE'])
 @jwt_required
+@cross_origin(supports_credentials=True)
 def id_cm_name(cm_uuid: str):
     try:
         cm_uuid = UUID(cm_uuid)
