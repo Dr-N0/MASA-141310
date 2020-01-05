@@ -97,7 +97,12 @@ table_name = cm_meta
 #### Endpoints
 
 ```
-Currently being refactored
+GET     /cm/
+POST    /cm/
+GET     /cm/name/<cm_name>/
+DELETE  /cm/name/<cm_name>/
+GET     /cm/id/<cm_uuid>/
+DELETE  /cm/id/<cm_uuid>/
 ```
 
 ### Log Types
