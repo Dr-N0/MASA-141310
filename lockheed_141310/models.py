@@ -129,18 +129,24 @@ class Users(db.Model):
 
 
 class RoleDefinitions(db.Model):
-    __tablename__ = 'role_descriptions'
+    __tablename__ = 'role_definitions'
     name = db.Column(TEXT)
     id = db.Column(db.Integer, primary_key=True)
-    create_user = db.Column(BOOLEAN)
     get_log = db.Column(BOOLEAN)
     post_log = db.Column(BOOLEAN)
+    create_user = db.Column(BOOLEAN)
+    delete_user = db.Column(BOOLEAN)
+    create_role = db.Column(BOOLEAN)
+    delete_role = db.Column(BOOLEAN)
 
     def __init__(self, name: str, **kwargs):
         self.name = name
-        self.create_user = kwargs.get("create_user", False)
         self.get_log = kwargs.get("get_log", False)
         self.post_log = kwargs.get("post_log", False)
+        self.create_user = kwargs.get("create_user", False)
+        self.delete_user = kwargs.get("delete_user", False)
+        self.create_role = kwargs.get("create_role", False)
+        self.delete_role = kwargs.get("delete_role", False)
 
     @classmethod
     def create(cls, name: str, **kwargs):
@@ -151,9 +157,12 @@ class RoleDefinitions(db.Model):
     def to_json(self) -> dict:
         return {
             "name": self.name,
-            "is_admin": self.is_admin,
             "get_log": self.get_log,
-            "post_log": self.post_log
+            "post_log": self.post_log,
+            "create_user": self.create_user,
+            "delete_user": self.delete_user,
+            "create_role": self.create_role,
+            "delete_role": self.delete_role
         }
 
     def has_permission(self, permission: str) -> bool:
