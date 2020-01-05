@@ -130,7 +130,7 @@ class Users(db.Model):
 
 class RoleDefinitions(db.Model):
     __tablename__ = 'role_definitions'
-    name = db.Column(TEXT)
+    name = db.Column(TEXT, unique=True)
     id = db.Column(db.Integer, primary_key=True)
     get_log = db.Column(BOOLEAN)
     post_log = db.Column(BOOLEAN)
@@ -149,12 +149,13 @@ class RoleDefinitions(db.Model):
         self.delete_role = kwargs.get("delete_role", False)
 
     @classmethod
-    def create(cls, name: str, **kwargs):
-        new_role = cls(name, kwargs=kwargs)
+    def create(cls, name: str, **kwargs) -> dict:
+        new_role = cls(name, **kwargs)
         db.session.add(new_role)
         db.session.commit()
+        return new_role.to_dict()
 
-    def to_json(self) -> dict:
+    def to_dict(self) -> dict:
         return {
             "name": self.name,
             "get_log": self.get_log,
@@ -185,10 +186,11 @@ class Roles(db.Model):
         self.role_id = role_id
 
     @classmethod
-    def create(cls, user_id: UUID, role_id: int) -> None:
+    def create(cls, user_id: UUID, role_id: int) -> dict:
         new_role = cls(user_id, role_id)
         db.session.add(new_role)
         db.session.commit()
+        return new_role.to_dict()
 
     def get_name(self) -> str:
         return RoleDefinitions.query.filter_by(id=self.role_id).first().name
@@ -201,6 +203,13 @@ class Roles(db.Model):
         if hasattr(definition, permission):
             return getattr(definition, permission)
         return False
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "role_id": self.role_id
+        }
 
 
 class CMLogTypes(db.Model):

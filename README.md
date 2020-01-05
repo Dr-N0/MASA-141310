@@ -53,23 +53,11 @@ table_name = role_descriptions
 
 #### Endpoints
 
-Current
-
-```
-GET     /roles/<name>/
-POST    /roles/<name>/
-DELETE  /roles/<name>/
-```
-
-Coming Soon
-
 ```
 GET     /roles/
 POST    /roles/
 GET     /roles/name/<name>/
 DELETE  /roles/name/<name>/
-GET     /roles/id/<id>/
-DELETE  /roles/id/<id>/
 ```
 
 ### Roles
