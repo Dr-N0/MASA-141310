@@ -18,10 +18,17 @@ class CMMeta(db.Model):
         self.name = name
 
     @classmethod
-    def create(cls, name: str) -> None:
+    def create(cls, name: str) -> dict:
         new_meta = cls(name)
         db.session.add(new_meta)
         db.session.commit()
+        return new_meta.to_dict()
+
+    def to_dict(self) -> dict:
+        return {
+            "uuid": self.uuid,
+            "name": self.name,
+        }
 
 
 class CMLog(db.Model):

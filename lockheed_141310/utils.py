@@ -12,9 +12,6 @@ def authenticate(username: str, password: str):
     if not user:
         return False
     try:
-        print("verifying")
-        print(user.password)
-        print(password)
         return ph.verify(user.password, password)
     except VerifyMismatchError:
         return False

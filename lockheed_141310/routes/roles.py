@@ -29,12 +29,10 @@ def roles():
             .limit(limit) \
             .offset(offset * limit) \
             .all()
-        returnval = dict()
-        returnval['status'] = 'success'
-        returnval['data'] = []
-        for role_definition in role_definitions:
-            returnval['data'].append(role_definition.to_dict())
-        return jsonify(returnval), 200
+        return jsonify({
+            "status": "success",
+            "data": [role_definition.to_dict() for role_definition in role_definitions]
+        }), 200
     if request.method == 'POST':
         if not has_permission_by_name("create_role"):
             return jsonify({

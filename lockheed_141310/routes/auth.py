@@ -73,7 +73,6 @@ def logout():
     """
     jti = get_raw_jwt()['jti']
     blacklist.add(jti)
-    print(blacklist)
     return jsonify({"status": "success",
                     "message": "token successfully revoked"}), 200
 
