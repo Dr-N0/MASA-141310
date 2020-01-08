@@ -48,25 +48,6 @@ def roles():
                 "message": "content-type must be application/json"
             }), 415
         if RoleDefinitions.query.filter_by(name=name).first():
-            return jsonify({"status": "error",
-                            "message": "definition already exists"}), 409
-        if request.is_json:
-            owner = request.json.get("owner", False)
-            is_admin = request.json.get("is_admin", False)
-            get_log = request.json.get("get_log", False)
-            post_log = request.json.get("post_log", False)
-        else:
-            owner = request.args.get("owner", False)
-            is_admin = request.args.get("is_admin", False)
-            get_log = request.args.get("get_log", False)
-            post_log = request.args.get("post_log", False)
-        RoleDefinitions.create(name,
-                               owner=bool(owner),
-                               is_admin=bool(is_admin),
-                               get_log=bool(get_log),
-                               post_log=bool(post_log))
-        requested_role = RoleDefinitions.query.filter_by(name=name).first()
-        return jsonify(requested_role.to_dict()), 201
             return jsonify({
                 "status": "error",
                 "message": "log type already exists"
@@ -148,6 +129,7 @@ def role(name):
             "status": "success",
             "data": role_definition.to_dict()
         }), 200
+
     if request.method == 'DELETE':
         if not has_permission_by_name("delete_role"):
             return jsonify({
