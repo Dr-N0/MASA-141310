@@ -36,17 +36,17 @@ def role(name):
             return jsonify({"status": "error",
                             "message": "definition already exists"}), 409
         if request.is_json:
-            is_owner = request.json.get("is_owner", False)
+            owner = request.json.get("owner", False)
             is_admin = request.json.get("is_admin", False)
             get_log = request.json.get("get_log", False)
             post_log = request.json.get("post_log", False)
         else:
-            is_owner = request.args.get("is_owner", False)
+            owner = request.args.get("owner", False)
             is_admin = request.args.get("is_admin", False)
             get_log = request.args.get("get_log", False)
             post_log = request.args.get("post_log", False)
         RoleDefinitions.create(name,
-                               is_owner=bool(is_owner),
+                               owner=bool(owner),
                                is_admin=bool(is_admin),
                                get_log=bool(get_log),
                                post_log=bool(post_log))

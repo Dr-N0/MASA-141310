@@ -63,7 +63,7 @@ class Users(db.Model):
     username = db.Column(TEXT, unique=True)
     password = db.Column(TEXT)
     id = db.Column(UUID(as_uuid=True), default=uuid.uuid4(), primary_key=True)
-    is_owner = db.Column(BOOLEAN)
+    owner = db.Column(BOOLEAN)
     active = db.Column(BOOLEAN)
     email = db.Column(TEXT, unique=True)
 
@@ -71,7 +71,7 @@ class Users(db.Model):
         self.username = username
         self.password = password
         self.id = uuid.uuid4()
-        self.is_owner = False
+        self.owner = False
         self.active = active
         self.email = email
 
@@ -122,7 +122,7 @@ class Users(db.Model):
         return {
             "username": self.username,
             "id": self.id,
-            "is_owner": self.is_owner,
+            "owner": self.owner,
             "roles": self.roles(),
             "active": self.active
         }

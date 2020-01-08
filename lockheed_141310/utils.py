@@ -63,7 +63,7 @@ def has_role_by_name(required_role: str) -> bool:
             return True
     if identity := get_jwt_identity():
         current_user = Users.query.filter_by(username=identity).first()
-        return bool(current_user.is_owner)
+        return bool(current_user.owner)
     return False
 
 
@@ -81,5 +81,5 @@ def has_permission_by_name(permission: str) -> bool:
                 return True
     if identity := get_jwt_identity():
         current_user = Users.query.filter_by(username=identity).first()
-        return bool(current_user.is_owner)
+        return bool(current_user.owner)
     return False
